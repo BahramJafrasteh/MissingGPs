@@ -90,13 +90,14 @@ You can run experiments ucing UCI data set with the above options.
 
 
 
-## Authors
+## Cite
 @article{jafrasteh2022gaussian,
   title={Gaussian Processes for Missing Value Imputation},
   author={Jafrasteh, Bahram and Hern{\'a}ndez-Lobato, Daniel and Lubi{\'a}n-L{\'o}pez, Sim{\'o}n Pedro and Benavente-Fern{\'a}ndez, Isabel},
   journal={arXiv preprint arXiv:2204.04648},
   year={2022}
 }
+[link to the paper](https://arxiv.org/pdf/2204.04648.pdf)
 
 
 ## License
