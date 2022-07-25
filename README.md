@@ -45,30 +45,23 @@ python GP_experiment_torch.py -h
                         (default: MeanStd)
   --split_number split_number
                         data set split number [0|1|2|etc] (default: 0)
-  --name svgp
-                        the available SVGP models are [nn|solve|swsgp|titsias]
-                        (default: nn)
-  --Ptype PTYPE         Problem type (regression or classification)
-                        [reg|class] (default: reg)
+  --name svgp           svgp
   --nGPU NGPU           GPU number (for cpu use -1) [-1|0|1|2] (default: -1)
-  --nEpoch NEPOCH       Maximum number of epochs (default: 100) (default: 100)
   --minibatch_size BATCHSIZE
                         Batch size (default: 100) (default: 100)
   --M NIP             number of inducing points (default: 100) (default:
                         1024)
   --M2 NIP2             number of inducing points (default: 100) (default:
                         1024)
-  --M2 NIP2             number of inducing points (default: 100) (default:
-                        1024)     
   --imputation mean     mean|median|knn|mice|None
   
-  --kernel              Matern|RBF
+  --kernel              Matern|RBF (defaults:matern)
   
-  --likelihood_var      ariance noise gaussian likelihood
+  --likelihood_var      ariance noise gaussian likelihood (0.01)
   
-  --lrate               learning rate
+  --lrate               learning rate (0.01)
   
-  --missing             consider missing rate
+  --missing             consider missing (should be on for MGP, otherwise return normal SVGP)
   
   --nGPU                GPU number
   
@@ -87,8 +80,8 @@ python GP_experiment_torch.py -h
 ```
 
 You can run experiments ucing UCI data set with the above options.
-
-
+To replicate results from the paper:
+python general_experiment_torch.py --dataset_name parkinson_10 --lrate 0.01 --split_number 0 --name svgp --n_samples 20 --M 100 --M2 100 --no_iterations 10000 --nolayers 1 --nGPU 0 --minibatch_size 100 --fitting --imputation mean --missing
 
 ## Cite
 @article{jafrasteh2022gaussian,
