@@ -1,6 +1,6 @@
 # Missing Gaussian Processes
 
-This code is a PyTorch 1.10.x cuda 11.3 implementation of the MGP method described in the paper entitled "Input Dependent Sparse Gaussian Processes", submitted to NeuroComputing. 
+This code is a PyTorch 1.10.x cuda 11.3 implementation of the MGP method described in the paper entitled "Input Dependent Sparse Gaussian Processes". 
 For comparision, we also implemented the following methods from :
 
 DGP, VSGP and MGP
