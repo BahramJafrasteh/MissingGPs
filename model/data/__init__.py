@@ -1,7 +1,6 @@
 
 import torch
-from inducing_layer_dgp.torch.data.dataloader import dataloader
-from inducing_layer_dgp.torch.data.dataloader_single import dataloader as dataloader_single
+from MGP.model.data.dataloader import dataloader
 
 
 class customLoader(object):
