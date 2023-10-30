@@ -84,16 +84,8 @@ To replicate results from the paper:
 python general_experiment_torch.py --dataset_name parkinson_10 --lrate 0.01 --split_number 0 --name svgp --n_samples 20 --M 100 --M2 100 --no_iterations 10000 --nolayers 1 --nGPU 0 --minibatch_size 100 --fitting --imputation mean --missing
 
 ## Cite
-@article{jafrasteh2023gaussian,
-  title={Gaussian processes for missing value imputation},
-  author={Jafrasteh, Bahram and Hern{\'a}ndez-Lobato, Daniel and Lubi{\'a}n-L{\'o}pez, Sim{\'o}n Pedro and Benavente-Fern{\'a}ndez, Isabel},
-  journal={Knowledge-Based Systems},
-  volume={273},
-  pages={110603},
-  year={2023},
-  publisher={Elsevier}
-}
-[Missing GPs]([https://arxiv.org/pdf/2204.04648.pdf](https://www.sciencedirect.com/science/article/pii/S0950705123003532))
+Jafrasteh, B., Hernández-Lobato, D., Lubián-López, S. P., & Benavente-Fernández, I. (2023). Gaussian processes for missing value imputation. Knowledge-Based Systems, 273, 110603.
+[Missing GPs](https://www.sciencedirect.com/science/article/pii/S0950705123003532)
 
 
 
