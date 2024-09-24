@@ -1,42 +1,27 @@
 # Missing Gaussian Processes
 
 This code is a PyTorch 1.10.x cuda 11.3 implementation of the MGP method described in the paper entitled "Input Dependent Sparse Gaussian Processes". 
-For comparision, we also implemented the following methods from :
+For comparison, we also implemented the following methods from:
 
 DGP, VSGP and MGP
 
-
-
 ## Getting Started
-
 
 ### Prerequisites
 
-The following package should be installed before using this code.
+Install the dependencies using the following command:
 
-```
-missingpy==0.2.0
-numpy==1.19.5
-pandas==1.1.5
-pkbar==0.5
-torch==1.10.0+cu113
-matplotlib==3.3.0
-fancyimpute==0.7.0
-rpy2==3.4.5
-scipy==1.5.0
-scikit_learn==1.0.2
-
+```bash
 pip install -r requirements.txt
-
 ```
 
 ### Using the code
 You can use the code as follows
 
 ```
-put your data in "data" folder and run your experiments
+put your data in "datasets" folder and run your experiments
 you have the following optional arguments
-python GP_experiment_torch.py -h
+python run_experiment.py -h
   -h, --help            show this help message and exit
   --dataset_name DATASET_NAME
                         name of the data set (should have subfolders with the
@@ -81,13 +66,11 @@ python GP_experiment_torch.py -h
 
 You can run experiments ucing UCI data set with the above options.
 To replicate results from the paper:
-python general_experiment_torch.py --dataset_name parkinson_10 --lrate 0.01 --split_number 0 --name svgp --n_samples 20 --M 100 --M2 100 --no_iterations 10000 --nolayers 1 --nGPU 0 --minibatch_size 100 --fitting --imputation mean --missing
+python run_experiment.py --dataset_name parkinson_10 --lrate 0.01 --split_number 0 --name svgp --n_samples 20 --M 100 --M2 100 --no_iterations 10000 --nolayers 1 --nGPU 0 --minibatch_size 100 --fitting --imputation mean --missing
 
 ## Cite
 Jafrasteh, B., Hernández-Lobato, D., Lubián-López, S. P., & Benavente-Fernández, I. (2023). Gaussian processes for missing value imputation. Knowledge-Based Systems, 273, 110603.
 [Missing GPs](https://www.sciencedirect.com/science/article/pii/S0950705123003532)
-
-
 
 ## License
 
