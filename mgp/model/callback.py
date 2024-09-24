@@ -1,3 +1,4 @@
+import csv
 import torch
 import time
 import pkbar
@@ -29,14 +30,39 @@ class logger:
         self.device = device
         if reset_logger:
             with open(on_epoch_end_file, "w") as myfile:
-                myfile.write(
-                    "epoch, nelbo_train, acc_train, nll_train, acc_train_c, nll_train_c, nelbo_test, acc_test, nll_test, acc_test_c, nll_test_c,total_time_train, prediction_time"
-                    "\n"
+                log_writer = csv.writer(myfile)
+                log_writer.writerow(
+                    [
+                        "epoch",
+                        "nelbo_train",
+                        "acc_train",
+                        "nll_train",
+                        "acc_train_c",
+                        "nll_train_c",
+                        "nelbo_test",
+                        "acc_test",
+                        "nll_test",
+                        "acc_test_c",
+                        "nll_test_c",
+                        "total_time_train",
+                        "prediction_time",
+                    ]
                 )
             with open(on_train_end_file, "w") as myfile:
-                myfile.write(
-                    "RMSE_train, NLL_train, RMSE_train_c, NLL_train_c, RMSE_test, NLL_test, RMSE_test_c, NLL_test_c,total_training_time, prediction_time"
-                    "\n"
+                log_writer = csv.writer(myfile)
+                log_writer.writerow(
+                    [
+                        "RMSE_train",
+                        "NLL_train",
+                        "RMSE_train_c",
+                        "NLL_train_c",
+                        "RMSE_test",
+                        "NLL_test",
+                        "RMSE_test_c",
+                        "NLL_test_c",
+                        "total_training_time",
+                        "prediction_time",
+                    ]
                 )
 
     def evaluate(self, generator, normalize_y=True):
@@ -173,33 +199,23 @@ class logger:
         print("\n")
         self.total_train_time = time.time() - ini_time
         with open(self.on_epoch_end_file, "a") as myfile:
-            myfile.write(
-                str(message_write["epoch"])
-                + " "
-                + str(message_write["nelbo_train"])
-                + " "
-                + str(message_write["acc_train"])
-                + " "
-                + str(message_write["nll_train"])
-                + " "
-                + str(message_write["acc_train_c"])
-                + " "
-                + str(message_write["nll_train_c"])
-                + " "
-                + str(NELBO)
-                + " "
-                + str(ACC)
-                + " "
-                + str(NLL)
-                + " "
-                + str(ACC_c)
-                + " "
-                + str(NLL_c)
-                + " "
-                + str(self.total_train_time)
-                + " "
-                + str(prediction_time)
-                + "\n"
+            log_writer = csv.writer(myfile)
+            log_writer.writerow(
+                [
+                    message_write["epoch"],
+                    message_write["nelbo_train"],
+                    message_write["acc_train"],
+                    message_write["nll_train"],
+                    message_write["acc_train_c"],
+                    message_write["nll_train_c"],
+                    NELBO,
+                    ACC,
+                    NLL,
+                    ACC_c,
+                    NLL_c,
+                    self.total_train_time,
+                    prediction_time,
+                ]
             )
 
         self.model.train()
@@ -307,10 +323,10 @@ class logger:
 
         NELBO_test = 0.0
         prediction_time = end_predict - start_predict
-        print("Average likelihood {}".format(ACC_test))
-        print("Average rmse {}".format(NLL_test))
+        print("Average likelihood {:.4f}".format(ACC_test))
+        print("Average rmse {:.4f}".format(NLL_test))
         print(
-            "Training time {}, prediction time {}".format(
+            "Training time {:.2f}s, prediction time {}".format(
                 self.total_train_time, prediction_time
             )
         )
@@ -318,27 +334,20 @@ class logger:
         outfile = join(dirname(self.on_train_end_file), "results_missing_pred_test.csv")
 
         with open(self.on_train_end_file, "a") as myfile:
-            myfile.write(
-                str(ACC_train)
-                + " "
-                + str(NLL_train)
-                + " "
-                + str(ACC_train_c)
-                + " "
-                + str(NLL_train_c)
-                + " "
-                + str(ACC_test)
-                + " "
-                + str(NLL_test)
-                + " "
-                + str(ACC_test_c)
-                + " "
-                + str(NLL_test_c)
-                + " "
-                + str(self.total_train_time)
-                + " "
-                + str(prediction_time)
-                + "\n"
+            log_writer = csv.writer(myfile)
+            log_writer.writerow(
+                [
+                    ACC_train,
+                    NLL_train,
+                    ACC_train_c,
+                    NLL_train_c,
+                    ACC_test,
+                    NLL_test,
+                    ACC_test_c,
+                    NLL_test_c,
+                    self.total_train_time,
+                    prediction_time,
+                ]
             )
         return (
             NELBO_train,
