@@ -12,33 +12,39 @@ ActiveDims = Union[slice, list]
 
 
 def square_distance(X, X2):
-        """
-        RBF KERNEL
-        """
+    """
+    RBF KERNEL
+    """
 
-        Xs = X.square().sum(-1).unsqueeze(-1)
-        if X2 is None:
-            dist = -2 * X.matmul(X.transpose(-1,-2))
+    Xs = X.square().sum(-1).unsqueeze(-1)
+    if X2 is None:
+        dist = -2 * X.matmul(X.transpose(-1, -2))
 
-            dist += Xs + Xs.transpose(-1,-2)
-            return dist
-
-
-        X2s = X2.square().sum(-1).unsqueeze(-1)
-        dist = -2 * X.matmul(X2.transpose(-1,-2))
-        dist += Xs + X2s.transpose(-1,-2)
+        dist += Xs + Xs.transpose(-1, -2)
         return dist
+
+    X2s = X2.square().sum(-1).unsqueeze(-1)
+    dist = -2 * X.matmul(X2.transpose(-1, -2))
+    dist += Xs + X2s.transpose(-1, -2)
+    return dist
+
 
 class Kernel(nn.Module):
     """
     base class for kernels
     """
+
     def name(self):
-        'Kernel'
-    def __init__(self, active_dims: Optional[ActiveDims] = None, name: Optional[str] = None,
-                 dtype = torch.float64, device = None):
-        """
-        """
+        "Kernel"
+
+    def __init__(
+        self,
+        active_dims: Optional[ActiveDims] = None,
+        name: Optional[str] = None,
+        dtype=torch.float64,
+        device=None,
+    ):
+        """ """
         super().__init__()
         self.device = device
         self.dtype = dtype
@@ -61,9 +67,7 @@ class Kernel(nn.Module):
         self._active_dims = self._normalize_active_dims(value)
 
     def slice(self, X: torch.Tensor, X2: Optional[torch.Tensor] = None):
-        """
-
-        """
+        """ """
         dims = self.active_dims
         if isinstance(dims, slice):
             X = X[..., dims]
@@ -71,7 +75,6 @@ class Kernel(nn.Module):
                 X2 = X2[..., dims]
 
         return X, X2
-
 
     def _validate_ard_active_dims(self, ard_parameter):
         """
@@ -82,7 +85,9 @@ class Kernel(nn.Module):
             # Can only validate parameter if active_dims is an array
             return
 
-        if ard_parameter.shape.rank > 0 and ard_parameter.shape[0] != len(self.active_dims):
+        if ard_parameter.shape.rank > 0 and ard_parameter.shape[0] != len(
+            self.active_dims
+        ):
             raise ValueError(
                 f"Size of `active_dims` {self.active_dims} does not match "
                 f"size of ard parameter ({ard_parameter.shape[0]})"
@@ -98,7 +103,9 @@ class Kernel(nn.Module):
 
     def __call__(self, X, X2=None, *, full_cov=True, presliced=False):
         if (not full_cov) and (X2 is not None):
-            raise ValueError("Ambiguous inputs: `not full_cov` and `X2` are not compatible.")
+            raise ValueError(
+                "Ambiguous inputs: `not full_cov` and `X2` are not compatible."
+            )
 
         if not presliced:
             X, X2 = self.slice(X, X2)
@@ -114,11 +121,8 @@ class Kernel(nn.Module):
         return Sum([self, other])
 
 
-
 class Combination(Kernel):
-    """
-
-    """
+    """ """
 
     _reduction = None
 
@@ -131,7 +135,6 @@ class Combination(Kernel):
         self._set_kernels(kernels)
 
     def _set_kernels(self, kernels: List[Kernel]):
-
         kernels_list = nn.ModuleList()
         for k in kernels:
             if isinstance(k, self.__class__):
@@ -142,8 +145,7 @@ class Combination(Kernel):
 
     @property
     def on_separate_dimensions(self):
-        """
-        """
+        """ """
         if np.any([isinstance(k.active_dims, slice) for k in self.kernels]):
             return False
         else:
@@ -181,36 +183,36 @@ class Sum(ReducingCombination):
         return sum
 
 
-
-
 class Stationary(Kernel):
-    """
-    """
+    """ """
 
     def __init__(self, variance=1.0, lengthscales=1.0, device=None, **kwargs):
-        """
-        """
+        """ """
         for kwarg in kwargs:
             if kwarg not in {"name", "active_dims"}:
                 raise TypeError(f"Unknown keyword argument: {kwarg}")
 
-        super().__init__(device =device, **kwargs)
+        super().__init__(device=device, **kwargs)
 
+        self.register_parameter(
+            "log_variance",
+            nn.Parameter(
+                torch.tensor(np.log(variance), dtype=self.dtype, device=self.device)
+            ),
+        )
 
-        self.register_parameter('log_variance', nn.Parameter(
-            torch.tensor(np.log(variance), dtype=self.dtype, device=self.device)))
-
-        self.register_parameter('log_lengthscales',nn.Parameter(torch.tensor(np.log(lengthscales),
-                                                                        dtype=self.dtype, device=self.device)))
-
-
+        self.register_parameter(
+            "log_lengthscales",
+            nn.Parameter(
+                torch.tensor(np.log(lengthscales), dtype=self.dtype, device=self.device)
+            ),
+        )
 
         self._validate_ard_active_dims(self.log_lengthscales)
 
     @property
     def ard(self) -> bool:
-        """
-        """
+        """ """
         return self.log_lengthscales.shape.ndims > 0
 
     def scale(self, X):
@@ -222,80 +224,70 @@ class Stationary(Kernel):
 
 
 class IsotropicStationary(Stationary):
-    """
-    """
+    """ """
 
     def K(self, X, X2=None):
         r2 = self.scaled_squared_euclid_dist(X, X2)
         return self.K_r2(r2)
 
-
-
     def scaled_squared_euclid_dist(self, X, X2=None):
-        """
-        """
+        """ """
         return square_distance(self.scale(X), self.scale(X2))
 
 
-
 class Static(Kernel):
-    """
+    """ """
 
-    """
+    def __init__(self, variance=1.0, active_dims=None, device=None):
+        super().__init__(active_dims, device=device)
 
-    def __init__(self, variance=1.0, active_dims=None, device = None):
-
-        super().__init__(active_dims, device = device)
-
-        self.register_parameter('log_variance', nn.Parameter(
-            torch.tensor(np.log(variance), dtype=self.dtype, device=self.device)))
-
-
+        self.register_parameter(
+            "log_variance",
+            nn.Parameter(
+                torch.tensor(np.log(variance), dtype=self.dtype, device=self.device)
+            ),
+        )
 
     def K_diag(self, X):
         return (self.log_variance).exp().repeat(X.shape[-2])
 
 
 class White(Static):
-    """
-
-    """
+    """ """
 
     def K(self, X, X2=None):
         if X2 is None:
-            d = torch.tile((self.log_variance).exp().squeeze(), dims=(X.shape[0],1) )[:,0]
+            d = torch.tile((self.log_variance).exp().squeeze(), dims=(X.shape[0], 1))[
+                :, 0
+            ]
             return torch.diag_embed(d)
         else:
             return torch.zeros((X.shape[-2], X2.shape[-2])).to(X.device).to(X.dtype)
 
 
-
 class SquaredExponential(IsotropicStationary):
-    """
-
-    """
+    """ """
 
     def K_r2(self, r2):
         return (self.log_variance).exp() * torch.exp(-0.5 * r2)
+
 
 class Matern(IsotropicStationary):
     """
     @
     """
+
     def K(self, X, X2=None):
         r = self.scaled_euclid_dist(X, X2)
         return self.K_r(r)
 
     def scaled_euclid_dist(self, X, X2=None):
-        """
-
-        """
+        """ """
         if X2 is None:
             return torch.cdist(self.scale(X), self.scale(X), p=2).sqrt()
         return torch.cdist(self.scale(X), self.scale(X2), p=2).sqrt()
 
-    def K_r(self, r, nu = 1.5):
-
+    def K_r(self, r, nu=1.5):
         # multiply by term
         exp_c = torch.exp(-np.sqrt(nu * 2) * r)
 
@@ -307,9 +299,6 @@ class Matern(IsotropicStationary):
             const_c = 1.0 + np.sqrt(3) * r
         elif nu == 2.5:
             # Matern 5/2
-            const_c = np.sqrt(5) * r + 1.0 + 5.0 / 3.0 * r ** 2
+            const_c = np.sqrt(5) * r + 1.0 + 5.0 / 3.0 * r**2
 
-
-        return ((self.log_variance).exp() * const_c * exp_c)
-
-
+        return (self.log_variance).exp() * const_c * exp_c

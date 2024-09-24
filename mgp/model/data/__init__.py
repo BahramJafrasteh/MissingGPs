@@ -1,11 +1,19 @@
-
 import torch
-from MGP.model.data.dataloader import dataloader
+from mgp.model.data.dataloader import dataloader
 
 
 class customLoader(object):
-    def __init__(self, X, y, ind_total_nan, ind_total_nan_target, minibatch_size,  numThreads= 1, shuffle = True, device=None):
-
+    def __init__(
+        self,
+        X,
+        y,
+        ind_total_nan,
+        ind_total_nan_target,
+        minibatch_size,
+        numThreads=1,
+        shuffle=True,
+        device=None,
+    ):
         self.dataset = dataloader()
         self.dataset.create(X, y, ind_total_nan, ind_total_nan_target, device=device)
         # load data set
@@ -13,12 +21,13 @@ class customLoader(object):
             self.dataset,
             batch_size=minibatch_size,
             shuffle=shuffle,
-           # num_workers=numThreads
+            # num_workers=numThreads
         )
 
         self.initialize()
+
     def name(self):
-        return 'customLoader'
+        return "customLoader"
 
     def initialize(self):
         pass
