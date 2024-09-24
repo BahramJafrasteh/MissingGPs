@@ -16,11 +16,10 @@ pip install -r requirements.txt
 ```
 
 ### Using the code
-You can use the code as follows
+
+Put your data in "datasets" folder and run your experiments using the following command with optional arguments.
 
 ```
-put your data in "datasets" folder and run your experiments
-you have the following optional arguments
 python run_experiment.py -h
   -h, --help            show this help message and exit
   --dataset_name DATASET_NAME
@@ -42,7 +41,7 @@ python run_experiment.py -h
   
   --kernel              Matern|RBF (defaults:matern)
   
-  --likelihood_var      ariance noise gaussian likelihood (0.01)
+  --likelihood_var      variance noise gaussian likelihood (0.01)
   
   --lrate               learning rate (0.01)
   
@@ -64,9 +63,11 @@ python run_experiment.py -h
 
 ```
 
-You can run experiments ucing UCI data set with the above options.
+You can run experiments using UCI data set with the above options.
 To replicate results from the paper:
+```bash
 python run_experiment.py --dataset_name parkinson_10 --lrate 0.01 --split_number 0 --name svgp --n_samples 20 --M 100 --M2 100 --no_iterations 10000 --nolayers 1 --nGPU 0 --minibatch_size 100 --fitting --imputation mean --missing
+```
 
 ## Cite
 Jafrasteh, B., Hernández-Lobato, D., Lubián-López, S. P., & Benavente-Fernández, I. (2023). Gaussian processes for missing value imputation. Knowledge-Based Systems, 273, 110603.
