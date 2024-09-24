@@ -307,10 +307,10 @@ class logger:
 
         NELBO_test = 0.0
         prediction_time = end_predict - start_predict
-        print("Average likelihood {}".format(ACC_test))
-        print("Average rmse {}".format(NLL_test))
+        print("Average likelihood {:.4f}".format(ACC_test))
+        print("Average rmse {:.4f}".format(NLL_test))
         print(
-            "Training time {}, prediction time {}".format(
+            "Training time {:.2f}s, prediction time {}".format(
                 self.total_train_time, prediction_time
             )
         )
