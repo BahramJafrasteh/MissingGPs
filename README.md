@@ -1,11 +1,17 @@
 # MGP-Imputer: Missing Value Imputation with Deep Gaussian Processes
-
 [![PyPI version](https://badge.fury.io/py/mgp-imputer.svg)](https://badge.fury.io/py/mgp-imputer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A PyTorch-based implementation of Missing Gaussian Processes (MGP) for missing value imputation, wrapped in a user-friendly `scikit-learn` compatible API.
 
 This package allows you to seamlessly integrate Deep Gaussian Process models into your data preprocessing pipelines for robust and uncertainty-aware imputation. It is based on the paper ["Gaussian processes for missing value imputation"](https://www.sciencedirect.com/science/article/pii/S0950705123003532).
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/BahramJafrasteh/MissingGPs/main/mgp.png" alt="MELAGE Demo" width="600"/><br>
+  <p align="center">
+    <em>Gaussian processes for missing value imputation</em>  
+  </p>
+</p>
 
 ## Features
 
