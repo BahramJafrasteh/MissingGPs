@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
-from fancyimpute import KNN
+#from fancyimpute import KNN
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn.linear_model import LinearRegression, BayesianRidge
@@ -13,11 +13,11 @@ from sklearn.preprocessing import (
 )
 from sklearn.impute import KNNImputer
 from sklearn.metrics import mean_squared_error
-from rpy2.robjects.packages import importr
-import rpy2.robjects as ro
-import rpy2.robjects.numpy2ri
+#from rpy2.robjects.packages import importr
+#import rpy2.robjects as ro
+#import rpy2.robjects.numpy2ri
 
-rpy2.robjects.numpy2ri.activate()
+#rpy2.robjects.numpy2ri.activate()
 
 
 def mean_imputer(x, ind_total_nan):

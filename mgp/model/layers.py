@@ -159,10 +159,10 @@ class SVGPLayer(Layer):
 
         Kuf = self.kern(self.inducing_points, X)
 
-        A = torch.triangular_solve(Kuf, Lu, upper=False)[0]
+        A = torch.linalg.solve_triangular(Lu, Kuf, upper=False)
 
         if not self.white:
-            A = torch.triangular_solve(A, Lu.transpose(0, 1), upper=True)[0]
+            A = torch.linalg.solve_triangular(Lu.transpose(0, 1), A, upper=True)
 
         mean = A.transpose(0, 1).matmul(self.q_mu)
 
@@ -223,7 +223,7 @@ class SVGPLayer(Layer):
 
             KL += (
                 0.5
-                * torch.triangular_solve(q_sqrt, Lu_tiled, upper=False)[0]
+                * torch.linalg.solve_triangular(Lu_tiled, q_sqrt, upper=False)
                 .square()
                 .sum()
             )

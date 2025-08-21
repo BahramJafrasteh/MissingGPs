@@ -55,6 +55,7 @@ class DGP_Base(nn.Module):
         self.layer_missing_index = layer_missing_index
         self.ind_binary = ind_binary
         self.rmse_metric = torch.nn.MSELoss()
+        self.no_gt = False
 
     def train_step(
         self,
@@ -145,18 +146,19 @@ class DGP_Base(nn.Module):
             return torch.mean(f1 + f2 + f3)
 
         def compute_nn_mse(y, mean_pred, std_pred, ind_nan_target):
+            ind_true_target = ~ind_nan_target
             D = ind_nan_target.shape[1]
             nll, rmse = [], []
             for d in range(D):
                 if ind_nan_target[:, d].sum() > 0:
                     a = self.rmse_metric(
-                        y[ind_nan_target[:, d], d],
-                        mean_pred[:, ind_nan_target[:, d], d].mean(0),
+                        y[ind_true_target[:, d], d],
+                        mean_pred[:, ind_true_target[:, d], d].mean(0),
                     ).sqrt()
                     b = compute_nn(
-                        y[ind_nan_target[:, d], d],
-                        mean_pred[:, ind_nan_target[:, d], d].squeeze(-1),
-                        std_pred[:, ind_nan_target[:, d], d].squeeze(-1),
+                        y[ind_true_target[:, d], d],
+                        mean_pred[:, ind_true_target[:, d], d].squeeze(-1),
+                        std_pred[:, ind_true_target[:, d], d].squeeze(-1),
                     )
 
                     nll.append(b)
@@ -201,7 +203,7 @@ class DGP_Base(nn.Module):
             self.mean_pred_aggr = mean_pred
             self.std_pred_aggr = std_pred
 
-            if self.opt.missing:
+            if self.use_missing_gp:
                 self.y_aggr = y
                 ind_nan_target = ind_nan
 
@@ -251,7 +253,7 @@ class DGP_Base(nn.Module):
             max_use=max_use,
             training=training,
         )
-        if self.opt.missing:
+        if self.use_missing_gp:
             output_means_converted = inputs.clone()
             output_sqrt_converted = torch.zeros_like(output_means_converted)
 
@@ -354,7 +356,7 @@ class DGP_Base(nn.Module):
         @param training:
         @return:
         """
-        if self.opt.missing:
+        if self.use_missing_gp:
             F = X
         else:
             if X.ndim != 3:
@@ -378,7 +380,7 @@ class DGP_Base(nn.Module):
             Fmean, Fvar = [], []
             Ds_predict = []
             for layer, z in zip(self.layers_dgp, zs):
-                if self.opt.missing:
+                if self.use_missing_gp:
                     D_predict = self.layer_missing_index[l_n]
                     effective_dims = list(set(np.arange(F.shape[2])) - set([D_predict]))
 
@@ -471,7 +473,7 @@ class DGP_Base(nn.Module):
         )
         var_exp = 0
 
-        if self.opt.missing:
+        if self.use_missing_gp:
             X_true = Y
             ind_total_true = ~ind_nan_target
 
@@ -497,7 +499,8 @@ class DGP_Base(nn.Module):
 
         else:
             scale = self.num_data[-1] / X.shape[0]  # ind_total_true[:,o].sum()
-            if self.opt.consider_miss:
+
+            if self.no_gt:
                 ind_total_true = ~ind_nan_target
                 scale = self.num_data[-1] / ind_total_true.sum()
                 var_exp += (
@@ -534,7 +537,7 @@ class DGP_Base(nn.Module):
             X, Y, ind_nan, ind_nan_target, max_use=max_use, current_iter=current_iter
         )
 
-        if self.opt.missing:
+        if self.use_missing_gp:
             KL = torch.stack(
                 [layer.KL() for num, layer in enumerate(self.layers_dgp)]
             ).sum()
@@ -595,9 +598,9 @@ class DGP(DGP_Base):
         x_stds=None,
         scaler=None,
         layer=None,
-        opt=None,
+        use_missing_gp=True,
     ):
-        if opt.missing:
+        if use_missing_gp:
             inits = init_layers_linear_missing
         else:
             inits = init_layers_linear
@@ -614,9 +617,8 @@ class DGP(DGP_Base):
             ind_total_nan=ind_total_nan,
             layer_missing_index=layer_missing_index,
             Layer=layer,
-            opt=opt,
         )
-        self.opt = opt
+        self.use_missing_gp = use_missing_gp
         self.scaler = scaler
         self.onelayer_out = False
         if len(layer_sizes) - len(layer_missing_index) > 0:

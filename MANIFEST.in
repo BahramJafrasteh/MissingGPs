@@ -1,0 +1,6 @@
+include README.md
+include CITATION.cff
+include LICENSE
+recursive-include mgp *.py
+recursive-include mgp/datasets
+include LICENSE.txt

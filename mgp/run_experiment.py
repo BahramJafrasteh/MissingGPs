@@ -134,7 +134,7 @@ def build_model_missing(
                 Z = X_train[ind_sel, :]
                 break
             # Z2 = kmeans2(X_train, opt.M2, minit='points')[0]
-            kmeans = KMeans(n_clusters=opt.M2, random_state=0).fit(X_train)
+            kmeans = KMeans(n_clusters=opt.M2, random_state=42, n_init=10).fit(X_train)
             Z = kmeans.cluster_centers_
             empty_cluster = False
         except Warning:
@@ -214,7 +214,7 @@ def build_model_missing(
             x_stds=x_stds,
             scaler=scaler,
             layer=layer_used,
-            opt=opt,
+            use_missing_gp=True,
         )
         return model_missing
 
@@ -348,7 +348,8 @@ def build_model(
             x_stds=x_stds,
             scaler=scaler,
             layer=layer_used,
-            opt=opt,
+            use_missing_gp=False,
+
         )
 
     else:
@@ -491,6 +492,7 @@ def launch_experiment(opt):
                 lrate=opt.lrate,
                 ind_binary=ind_binary,
                 predict_test=False,
+                verbose=True
             )
         else:
             load_model(
@@ -521,7 +523,7 @@ def launch_experiment(opt):
             ind_total_nan,
             opt.minibatch_size,
             numThreads=opt.numThreads,
-            shuffle=False,
+            shuffle=True,
             device=device,
         )
 
@@ -679,6 +681,7 @@ def launch_experiment(opt):
                 lrate=opt.lrate,
                 ind_binary=ind_binary,
                 predict_test=False,
+                verbose=True
             )
         else:
             load_model(
@@ -706,7 +709,7 @@ def launch_experiment(opt):
             ind_total_nan,
             opt.minibatch_size,
             numThreads=opt.numThreads,
-            shuffle=False,
+            shuffle=True,
             device=device,
         )
 

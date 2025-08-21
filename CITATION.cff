@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Jafrasteh"
+    given-names: "B."
+  - family-names: "Hernández-Lobato"
+    given-names: "D."
+  - family-names: "Lubián-López"
+    given-names: "S. P."
+  - family-names: "Benavente-Fernández"
+    given-names: "I."
+title: "Gaussian processes for missing value imputation"
+journal: "Knowledge-Based Systems"
+volume: 273
+pages: 110603
+year: 2023
+doi: "10.1016/j.knosys.2023.110603"
