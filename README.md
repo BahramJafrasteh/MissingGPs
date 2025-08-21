@@ -9,7 +9,7 @@ This package allows you to seamlessly integrate Deep Gaussian Process models int
 <p align="center">
   <img src="https://raw.githubusercontent.com/BahramJafrasteh/MissingGPs/main/mgp.png" alt="MELAGE Demo" width="600"/><br>
   <p align="center">
-    <em>Chained Deep Gaussian processes for missing value imputation</em>  
+    <em>Chained Deep Gaussian Processes for Missing Value Imputation</em>  
   </p>
 </p>
 
